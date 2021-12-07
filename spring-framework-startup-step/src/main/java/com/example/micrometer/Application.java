@@ -1,38 +1,34 @@
 package com.example.micrometer;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.metrics.observability.ObservabilityApplicationStartup;
+import org.springframework.core.metrics.micrometer.MicrometerApplicationStartup;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-public class Application {
-
-	private final MeterRegistry meterRegistry;
-
-	public Application(MeterRegistry meterRegistry) {
-		this.meterRegistry = meterRegistry;
-	}
+public record Application(MeterRegistry meterRegistry) {
 
 	public void run() {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		ObservabilityApplicationStartup startup = new ObservabilityApplicationStartup(meterRegistry);
+		MicrometerApplicationStartup startup = new MicrometerApplicationStartup(this.meterRegistry);
 		try {
 			applicationContext.setApplicationStartup(startup);
 			applicationContext.register(MyConfig.class);
 			applicationContext.refresh();
-		} finally {
-			startup.endRootRecording();
+		}
+		finally {
+			startup.stopRootSample();
 		}
 	}
 
 	public static void main(String[] args) {
-
+		new Application(new SimpleMeterRegistry()).run();
 	}
 }
 
@@ -56,11 +52,9 @@ class MyConfig {
 }
 
 @Service
-class MyService {
+record MyService(MyRepository myRepository) {
 
-	private final MyRepository myRepository;
-
-	public MyService(MyRepository myRepository) {
+	MyService(MyRepository myRepository) {
 		this.myRepository = myRepository;
 		try {
 			Thread.sleep(200L);
