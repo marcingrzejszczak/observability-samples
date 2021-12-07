@@ -21,9 +21,14 @@ public class Application {
 
 	public void run() {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.setApplicationStartup(new ObservabilityApplicationStartup(meterRegistry));
-		applicationContext.register(MyConfig.class);
-		applicationContext.refresh();
+		ObservabilityApplicationStartup startup = new ObservabilityApplicationStartup(meterRegistry);
+		try {
+			applicationContext.setApplicationStartup(startup);
+			applicationContext.register(MyConfig.class);
+			applicationContext.refresh();
+		} finally {
+			startup.endRootRecording();
+		}
 	}
 
 	public static void main(String[] args) {
