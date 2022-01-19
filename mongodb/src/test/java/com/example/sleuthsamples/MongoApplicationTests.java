@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.observability.MongoTracingRecordingHandler;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class MongoApplicationTests extends SampleTestRunner {
 
@@ -32,9 +30,7 @@ class MongoApplicationTests extends SampleTestRunner {
 	}
 
 	@Override public BiConsumer<Tracer, MeterRegistry> yourCode() {
-		return (tracer, meterRegistry) -> {
-			myRunner.run();
-		};
+		return (tracer, meterRegistry) -> myRunner.run();
 	}
 
 	@Override public BiConsumer<BuildingBlocks, Deque<TimerRecordingHandler>> customizeTimerRecordingHandlers() {
