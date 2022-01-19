@@ -30,13 +30,15 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
-				<module>spring-framework-startup-step</module>
+				<!-- <module>spring-framework-startup-step</module> -->
+				<module>mongodb</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>notest</id>
 			<modules>
-				<module>spring-framework-startup-step</module>
+				<module>mongodb</module>
+				<!-- <module>spring-framework-startup-step</module> -->
 			</modules>
 		</profile>
 	</profiles>
