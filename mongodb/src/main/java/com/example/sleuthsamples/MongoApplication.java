@@ -30,11 +30,13 @@ public class MongoApplication {
 	@Bean MongoClientSettingsBuilderCustomizer micrometerMongoClientSettingsBuilderCustomizer(MeterRegistry meterRegistry) {
 		return clientSettingsBuilder -> clientSettingsBuilder
 				.contextProvider(contextProvider(meterRegistry))
-				.addCommandListener(new MicrometerMongoCommandListener(meterRegistry));
+				.addCommandListener(new MicrometerMongoCommandListener(meterRegistry)); // [5]
 	}
 
 	static SynchronousContextProvider contextProvider(MeterRegistry meterRegistry) {
-		return () -> new SynchronousObservabilityRequestContext(meterRegistry);
+		return () -> {
+			return new SynchronousObservabilityRequestContext(meterRegistry); // [4]
+		};
 	}
 
 	static class SynchronousObservabilityRequestContext extends ObservabilityRequestContext {
@@ -68,9 +70,13 @@ class MyRunner {
 
 	void run() {
 		Timer.Sample foo = Timer.start(meterRegistry);
+		// foo created [1]
 		try (Timer.Scope scope = foo.makeCurrent()) {
-			User save = basicUserRepository.save(new User("foo" + System.currentTimeMillis(), "bar", "baz", null));
+			// current sample - foo [2]
+			User save = basicUserRepository.save(new User("foo" + System.currentTimeMillis(), "bar", "baz", null)); // <-- [3]
 			basicUserRepository.findUserByUsername(save.getUsername());
+		} finally {
+			foo.stop(Timer.builder("my.runner"));
 		}
 	}
 }

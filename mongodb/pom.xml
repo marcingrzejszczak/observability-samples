@@ -42,7 +42,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-tracing-test</artifactId>
+			<artifactId>micrometer-tracing-integration-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
