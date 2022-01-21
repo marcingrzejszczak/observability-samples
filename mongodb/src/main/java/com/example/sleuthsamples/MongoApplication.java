@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mongodb.client.SynchronousContextProvider;
 import io.micrometer.api.instrument.MeterRegistry;
 import io.micrometer.api.instrument.Timer;
+import io.micrometer.api.instrument.simple.SimpleMeterRegistry;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,6 +22,12 @@ public class MongoApplication {
 		new SpringApplicationBuilder(MongoApplication.class).web(WebApplicationType.NONE).run(args);
 	}
 
+	// TODO: Fix this in Spring Boot
+	@Bean
+	MeterRegistry meterRegistry() {
+		return new SimpleMeterRegistry();
+	}
+
 	@Bean
 	MyRunner myRunner(BasicUserRepository basicUserRepository, MeterRegistry meterRegistry) {
 		return new MyRunner(basicUserRepository, meterRegistry);
@@ -30,13 +37,11 @@ public class MongoApplication {
 	MongoClientSettingsBuilderCustomizer micrometerMongoClientSettingsBuilderCustomizer(MeterRegistry meterRegistry) {
 		return clientSettingsBuilder -> clientSettingsBuilder
 				.contextProvider(contextProvider(meterRegistry))
-				.addCommandListener(new MicrometerMongoCommandListener(meterRegistry)); // [5]
+				.addCommandListener(new MicrometerMongoCommandListener(meterRegistry));
 	}
 
 	static SynchronousContextProvider contextProvider(MeterRegistry meterRegistry) {
-		return () -> {
-			return new SynchronousObservabilityRequestContext(meterRegistry);
-		};
+		return () -> new SynchronousObservabilityRequestContext(meterRegistry);
 	}
 
 	static class SynchronousObservabilityRequestContext extends ObservabilityRequestContext {
