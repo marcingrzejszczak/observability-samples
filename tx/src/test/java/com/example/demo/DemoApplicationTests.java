@@ -53,6 +53,11 @@ class DemoApplicationTests extends SampleTestRunner {
 	}
 
 	@Override
+	public TracingSetup[] getTracingSetup() {
+		return new TracingSetup[] {TracingSetup.IN_MEMORY_BRAVE};
+	}
+
+	@Override
 	public SampleTestRunnerConsumer yourCode() throws Exception {
 		return (buildingBlocks, mr) -> {
 			try {
@@ -62,8 +67,9 @@ class DemoApplicationTests extends SampleTestRunner {
 
 				transactionTemplate.setName("test");
 
+
 				String transactionName = transactionTemplate.execute(status -> {
-					System.out.println("In transaction");
+					System.out.println("In transaction : " + TransactionSynchronizationManager.getCurrentTransactionName());
 
 					Future<?> submit = executorService.submit(new ContextPropagatingRunnable(container, () -> {
 						System.out.println("In new thread before new transaction : " + TransactionSynchronizationManager.getCurrentTransactionName());
@@ -76,6 +82,8 @@ class DemoApplicationTests extends SampleTestRunner {
 					}
 					catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
+					} finally {
+						System.out.println("TSM [" + TransactionSynchronizationManager.getResourceMap() + "]");
 					}
 
 					return TransactionSynchronizationManager.getCurrentTransactionName();
