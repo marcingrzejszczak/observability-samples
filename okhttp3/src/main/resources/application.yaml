@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: resttemplate
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+# For tests
+logging.level.org.springframework.cloud.sleuth: DEBUG
