@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-framework.version>6.0.0-SNAPSHOT</spring-framework.version>
-		<micrometer.version>2.0.0-SNAPSHOT</micrometer.version>
+		<micrometer.version>1.10.0-SNAPSHOT</micrometer.version>
 		<micrometer-tracing.version>1.0.0-SNAPSHOT</micrometer-tracing.version>
 		<context-propagation-api.version>1.0.0-SNAPSHOT</context-propagation-api.version>
 	</properties>

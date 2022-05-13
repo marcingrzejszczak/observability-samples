@@ -31,6 +31,7 @@
 			</activation>
 			<modules>
 				<module>mongodb</module>
+				<module>okhttp3</module>
 			</modules>
 		</profile>
 		<profile>
